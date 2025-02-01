@@ -1,0 +1,11 @@
+opencv-python
+numpy
+scikit-learn
+tensorflow
+streamlit
+joblib
+pillow
+scikit-image
+keras
+src
+skimage
