@@ -8,7 +8,7 @@
 #         # Load pre-trained VGG16 model (without the top classification layer)
 #         self.model = VGG16(weights='imagenet', include_top=False, input_shape=(72, 72, 3))
 
-#     def extract_cnn_features(self, images):
+    # def extract_cnn_features(self, images):
 #         cnn_features = []
 #         for image in images:
 #             # Convert grayscale image to RGB (required for VGG16)

@@ -90,6 +90,8 @@ class FaceRecognitionModel:
         self.cnn_model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, batch_size=16)
 
     def predict_cnn(self, X_test):
+        if self.cnn_model is None:
+            raise ValueError('the cnn model has not been trained yet')
         X_test = X_test.reshape((-1, 72, 72, 1)) / 255.0
         predictions = np.argmax(self.cnn_model.predict(X_test), axis=1)
         return predictions
