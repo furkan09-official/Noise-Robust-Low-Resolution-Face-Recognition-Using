@@ -70,7 +70,7 @@
 
 import streamlit as st
 import numpy as np
-import plotly
+import plotly.graph_objects as go
 from models.sift_model import FaceRecognitionModel
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -97,7 +97,7 @@ predictions = []
 accuracy = 0.0
 
 def show_speedometer(accuracy):
-    fig = plotly.Figure(plotly.Indicator(
+    fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=accuracy * 100,
         title={'text': "Recognition Accuracy (%)"},
