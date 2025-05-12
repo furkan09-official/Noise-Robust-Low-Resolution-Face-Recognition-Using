@@ -153,7 +153,7 @@ elif model_choice == "CNN":
                 idx = i + j
                 if idx < len(X_test):
                     with cols[j]:
-                        st.image(X_test[idx], caption=f"Pred: {predictions[idx]} | True: {y_test[idx]}", use_column_width=True)
+                        st.image(X_test[idx], caption=f"Pred: {predictions[idx]} | True: {y_test[idx]}", use_container_width=True)
                         correct = predictions[idx] == y_test[idx]
                         st.markdown(
                             f"<span style='color: {'green' if correct else 'red'};'>✔ Correct</span>" if correct else
