@@ -48,12 +48,23 @@ class FaceRecognitionModel:
                 descriptors_list.append(descriptors)
         return descriptors_list
 
+    # def extract_hog_features(self, images):
+    #     hog_features = []
+    #     for image in images:
+    #         features = hog(image, pixels_per_cell=(8, 8), cells_per_block=(2, 2), feature_vector=True)
+    #         hog_features.append(features)
+    #     return np.array(hog_features)
+
     def extract_hog_features(self, images):
         hog_features = []
         for image in images:
-            features = hog(image, pixels_per_cell=(8, 8), cells_per_block=(2, 2), feature_vector=True)
+            if len(image.shape) == 3:  # Convert to grayscale if it's not already
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            resized = cv2.resize(image, (72, 72))
+            features = hog(resized, pixels_per_cell=(8, 8), cells_per_block=(2, 2), feature_vector=True)
             hog_features.append(features)
         return np.array(hog_features)
+
 
     def match_descriptors(self, train_descriptors, test_descriptors, y_train):
         predictions = []
@@ -95,7 +106,47 @@ class FaceRecognitionModel:
         X_test = X_test.reshape((-1, 72, 72, 1)) / 255.0
         predictions = np.argmax(self.cnn_model.predict(X_test), axis=1)
         return predictions
+    # def extract_sift_hog_features(self, images):
+    #     combined_features = []
+    #     for image in images:
+    #     # -- SIFT part --
+    #       keypoints, descriptors = self.sift.detectAndCompute(image, None)
+    #       if descriptors is not None:
+    #         sift_feature = np.mean(descriptors, axis=0)  # Mean descriptor (128D)
+    #       else:
+    #         sift_feature = np.zeros(128)
 
+    #     # -- HOG part --
+    #     hog_feature = hog(image, pixels_per_cell=(8, 8), cells_per_block=(2, 2), feature_vector=True)
+
+    #     # -- Combine both --
+    #     combined = np.concatenate([sift_feature, hog_feature])
+    #     combined_features.append(combined)
+
+    #     return np.array(combined_features)
+
+    def extract_sift_hog_features(self, images):
+        combined_features = []
+        for image in images:
+            if len(image.shape) == 3:  # Ensure grayscale
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            resized = cv2.resize(image, (72, 72))
+
+            # -- SIFT part --
+            keypoints, descriptors = self.sift.detectAndCompute(resized, None)
+            if descriptors is not None:
+                sift_feature = np.mean(descriptors, axis=0)  # Mean descriptor (128D)
+            else:
+                sift_feature = np.zeros(128)
+
+            # -- HOG part --
+            hog_feature = hog(resized, pixels_per_cell=(8, 8), cells_per_block=(2, 2), feature_vector=True)
+
+            # -- Combine both --
+            combined = np.concatenate([sift_feature, hog_feature])
+            combined_features.append(combined)
+
+        return np.array(combined_features)
 
 
 
