@@ -94,11 +94,60 @@ class FaceRecognitionModel:
         model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
         return model
 
+
+
+    def build_sift_cnn(self, image_shape, sift_shape):
+        image_input = keras.Input(shape=image_shape, name="image_input")
+        x = layers.Conv2D(32, (3, 3), activation="relu")(image_input)
+        x = layers.MaxPooling2D((2, 2))(x)
+        x = layers.Conv2D(64, (3, 3), activation="relu")(x)
+        x = layers.MaxPooling2D((2, 2))(x)
+        x = layers.Flatten()(x)
+
+        sift_input = keras.Input(shape=(sift_shape,), name="sift_input")
+        y = layers.Dense(64, activation="relu")(sift_input)
+
+        combined = layers.Concatenate()([x, y])
+        z = layers.Dense(128, activation="relu")(combined)
+        z = layers.Dense(42, activation="softmax")(z)  # Change 42 to number of classes if needed
+
+        model = keras.Model(inputs=[image_input, sift_input], outputs=z)
+        model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+        return model
+
+
+
+
+
+
+
+
     def train_cnn(self, X_train, y_train, X_val, y_val):
         X_train = X_train.reshape((-1, 72, 72, 1)) / 255.0
         X_val = X_val.reshape((-1, 72, 72, 1)) / 255.0
         self.cnn_model = self.build_cnn((72, 72, 1))
         self.cnn_model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, batch_size=16)
+
+
+
+    def train_sift_cnn(self, X_images, sift_features, y_train, X_val_images, sift_val_features, y_val):
+        X_images = X_images.reshape((-1, 72, 72, 1)) / 255.0
+        X_val_images = X_val_images.reshape((-1, 72, 72, 1)) / 255.0
+
+        self.cnn_model = self.build_sift_cnn((72, 72, 1), sift_features.shape[1])
+        self.cnn_model.fit(
+            {"image_input": X_images, "sift_input": sift_features},
+            y_train,
+            validation_data=(
+                {"image_input": X_val_images, "sift_input": sift_val_features},
+                y_val
+            ),
+            epochs=10,
+            batch_size=16
+        )
+
+
+
 
     def predict_cnn(self, X_test):
         if self.cnn_model is None:
@@ -106,6 +155,18 @@ class FaceRecognitionModel:
         X_test = X_test.reshape((-1, 72, 72, 1)) / 255.0
         predictions = np.argmax(self.cnn_model.predict(X_test), axis=1)
         return predictions
+    
+
+    def predict_sift_cnn(self, X_images, sift_features):
+        if self.cnn_model is None:
+            raise ValueError("The CNN model has not been trained.")
+        X_images = X_images.reshape((-1, 72, 72, 1)) / 255.0
+        predictions = np.argmax(
+            self.cnn_model.predict({"image_input": X_images, "sift_input": sift_features}),
+            axis=1
+        )
+        return predictions
+
     # def extract_sift_hog_features(self, images):
     #     combined_features = []
     #     for image in images:

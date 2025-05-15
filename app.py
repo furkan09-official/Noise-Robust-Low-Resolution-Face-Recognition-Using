@@ -22,7 +22,7 @@ processed_images = model.preprocess_dataset(images)
 X_train, X_test, y_train, y_test = train_test_split(processed_images, labels, test_size=0.2, random_state=42)
 
 # Model selection
-model_choice = st.radio("🔍 Choose Model for Recognition:", ("SIFT", "HOG", "CNN","SIFT + HOG"))
+model_choice = st.radio("🔍 Choose Model for Recognition:", ("SIFT", "HOG", "CNN","SIFT + HOG","SIFT + CNN"))
 
 predictions = []
 accuracy = 0.0
@@ -101,6 +101,26 @@ elif model_choice == "SIFT + HOG":
     predictions = knn.predict(test_features)
 
     accuracy = accuracy_score(y_test, predictions)
+    show_speedometer(accuracy)
+
+    
+elif model_choice == "SIFT + CNN":
+    st.subheader("🤖 Combined SIFT + CNN Model")
+
+    # Extract SIFT + HOG features for train and test (as input to CNN)
+    train_sift_features = model.extract_sift_hog_features(X_train)
+    test_sift_features = model.extract_sift_hog_features(X_test)
+
+    # Train combined model using images + sift features
+    model.train_sift_cnn(X_train, train_sift_features, y_train, X_test, test_sift_features, y_test)
+
+    # Predict on test data
+    predictions = model.predict_sift_cnn(X_test, test_sift_features)
+
+    # Calculate accuracy
+    accuracy = accuracy_score(y_test, predictions)
+
+    # Show accuracy with your custom speedometer function
     show_speedometer(accuracy)
 
 
