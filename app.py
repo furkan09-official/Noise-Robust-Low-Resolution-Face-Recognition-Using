@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score
 model = FaceRecognitionModel()
 
 st.set_page_config(layout="wide")
-st.title("🧠 Low-Resolution Face Recognition using SIFT, HOG and CNN and sift + hog")
+st.title("Noise Robust Low-Resolution Face Recognition using SIFT, HOG And CNN")
 st.markdown("This app demonstrates face recognition on the **ORL dataset** using different models.")
 
 # Load dataset
@@ -22,7 +22,7 @@ processed_images = model.preprocess_dataset(images)
 X_train, X_test, y_train, y_test = train_test_split(processed_images, labels, test_size=0.2, random_state=42)
 
 # Model selection
-model_choice = st.radio("🔍 Choose Model for Recognition:", ("SIFT", "HOG", "CNN","SIFT + HOG","SIFT + CNN"))
+model_choice = st.radio("🔍 Choose Model for Recognition:", ("SIFT", "HOG", "CNN","SIFT + CNN"))
 
 predictions = []
 accuracy = 0.0
