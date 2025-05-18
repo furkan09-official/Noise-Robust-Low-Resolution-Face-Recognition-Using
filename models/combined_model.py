@@ -140,8 +140,6 @@ class FaceRecognitionModel:
         )
 
 
-
-
     def predict_cnn(self, X_test):
         if self.cnn_model is None:
             raise ValueError('the cnn model has not been trained yet')

@@ -67,6 +67,7 @@ if model_choice == "SIFT":
     test_descriptors = model.extract_sift_features(X_test)
     predictions = model.match_descriptors(train_descriptors, test_descriptors, y_train)
     accuracy = accuracy_score(y_test, predictions)
+    print(accuracy)
     show_speedometer(accuracy)
     display_predictions(X_test, y_test, predictions)
 
