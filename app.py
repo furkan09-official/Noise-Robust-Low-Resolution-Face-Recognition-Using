@@ -143,8 +143,8 @@ elif model_choice == "SIFT + CNN":
 
 
 # Optional: show full results in expandable section
-with st.expander("📋 Show All Predictions"):
-    min_len = min(len(X_test), len(predictions), len(y_test))
-    for i in range(len(X_test)):
-        st.image(X_test[i], caption=f"Test Image {i+1} | True: {y_test[i]}", width=150)
+# with st.expander("📋 Show All Predictions"):
+#     min_len = min(len(X_test), len(predictions), len(y_test))
+#     for i in range(len(X_test)):
+#         st.image(X_test[i], caption=f"Test Image {i+1} | True: {y_test[i]}", width=150)
 
