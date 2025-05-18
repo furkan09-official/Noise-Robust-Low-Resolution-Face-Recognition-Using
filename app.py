@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score
 model = FaceRecognitionModel()
 
 st.set_page_config(layout="wide")
-st.title("Noise Robust Low-Resolution Face Recognition using SIFT, HOG And CNN")
+st.title("Noise-Robust Low-Resolution Face Recognition using SIFT, HOG And CNN")
 st.markdown("This app demonstrates face recognition on the **ORL dataset** using different models.")
 
 # Load dataset
@@ -44,10 +44,6 @@ def show_speedometer(accuracy):
     ))
     st.plotly_chart(fig, use_container_width=True)
 
-
-
-
-
 def display_predictions(X_test, y_test, predictions):
     st.subheader("📷 Test Images")
     min_len = min(len(X_test), len(predictions), len(y_test))
@@ -65,18 +61,12 @@ def display_predictions(X_test, y_test, predictions):
                     )
 
 
-
-
-
-
-
 if model_choice == "SIFT":
     st.subheader("🔑 SIFT Feature Matching")
     train_descriptors = model.extract_sift_features(X_train)
     test_descriptors = model.extract_sift_features(X_test)
     predictions = model.match_descriptors(train_descriptors, test_descriptors, y_train)
     accuracy = accuracy_score(y_test, predictions)
-    # show_speedometer(accuracy)
     show_speedometer(accuracy)
     display_predictions(X_test, y_test, predictions)
 
@@ -92,7 +82,6 @@ elif model_choice == "HOG":
     predictions = knn.predict(test_hog_features)
 
     accuracy = accuracy_score(y_test, predictions)
-    # show_speedometer(accuracy)
     show_speedometer(accuracy)
     display_predictions(X_test, y_test, predictions)
 
@@ -138,22 +127,16 @@ elif model_choice == "SIFT + HOG":
 
 elif model_choice == "SIFT + CNN":
     st.subheader("🤖 Combined SIFT + CNN Model")
-
     # Extract SIFT + HOG features for train and test (as input to CNN)
     train_sift_features = model.extract_sift_hog_features(X_train)
     test_sift_features = model.extract_sift_hog_features(X_test)
-
     # Train combined model using images + sift features
     model.train_sift_cnn(X_train, train_sift_features, y_train, X_test, test_sift_features, y_test)
-
     # Predict on test data
     predictions = model.predict_sift_cnn(X_test, test_sift_features)
-
     # Calculate accuracy
     accuracy = accuracy_score(y_test, predictions)
-
     # Show accuracy with your custom speedometer function
-    # show_speedometer(accuracy)
     show_speedometer(accuracy)
     display_predictions(X_test, y_test, predictions)
 
