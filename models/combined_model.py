@@ -115,13 +115,6 @@ class FaceRecognitionModel:
         model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
         return model
 
-
-
-
-
-
-
-
     def train_cnn(self, X_train, y_train, X_val, y_val):
         X_train = X_train.reshape((-1, 72, 72, 1)) / 255.0
         X_val = X_val.reshape((-1, 72, 72, 1)) / 255.0

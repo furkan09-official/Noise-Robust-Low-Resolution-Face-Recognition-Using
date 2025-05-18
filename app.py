@@ -44,13 +44,42 @@ def show_speedometer(accuracy):
     ))
     st.plotly_chart(fig, use_container_width=True)
 
+
+
+
+
+def display_predictions(X_test, y_test, predictions):
+    st.subheader("📷 Test Images")
+    min_len = min(len(X_test), len(predictions), len(y_test))
+    for i in range(0, min_len, 3):
+        cols = st.columns(3)
+        for j in range(3):
+            idx = i + j
+            if idx < min_len:
+                with cols[j]:
+                    st.image(X_test[idx], caption=f"Pred: {predictions[idx]} | True: {y_test[idx]}")
+                    correct = predictions[idx] == y_test[idx]
+                    st.markdown(
+                        f"<span style='color: {'green' if correct else 'red'};'>✔ Correct</span>" if correct else
+                        f"<span style='color: red;'>✖ Wrong</span>", unsafe_allow_html=True
+                    )
+
+
+
+
+
+
+
 if model_choice == "SIFT":
     st.subheader("🔑 SIFT Feature Matching")
     train_descriptors = model.extract_sift_features(X_train)
     test_descriptors = model.extract_sift_features(X_test)
     predictions = model.match_descriptors(train_descriptors, test_descriptors, y_train)
     accuracy = accuracy_score(y_test, predictions)
+    # show_speedometer(accuracy)
     show_speedometer(accuracy)
+    display_predictions(X_test, y_test, predictions)
+
 
 elif model_choice == "HOG":
     st.subheader("📐 HOG Feature Matching")
@@ -63,7 +92,10 @@ elif model_choice == "HOG":
     predictions = knn.predict(test_hog_features)
 
     accuracy = accuracy_score(y_test, predictions)
+    # show_speedometer(accuracy)
     show_speedometer(accuracy)
+    display_predictions(X_test, y_test, predictions)
+
 
 elif model_choice == "CNN":
     st.subheader("🧠 CNN Classification")
@@ -84,7 +116,7 @@ elif model_choice == "CNN":
                 idx = i + j
                 if idx < len(X_test):
                     with cols[j]:
-                        st.image(X_test[idx], caption=f"Pred: {predictions[idx]} | True: {y_test[idx]}", use_container_width=True)
+                        st.image(X_test[idx], caption=f"Pred: {predictions[idx]} | True: {y_test[idx]}")
                         correct = predictions[idx] == y_test[idx]
                         st.markdown(
                             f"<span style='color: {'green' if correct else 'red'};'>✔ Correct</span>" if correct else
@@ -121,12 +153,15 @@ elif model_choice == "SIFT + CNN":
     accuracy = accuracy_score(y_test, predictions)
 
     # Show accuracy with your custom speedometer function
+    # show_speedometer(accuracy)
     show_speedometer(accuracy)
+    display_predictions(X_test, y_test, predictions)
+
 
 
 # Optional: show full results in expandable section
 with st.expander("📋 Show All Predictions"):
+    min_len = min(len(X_test), len(predictions), len(y_test))
     for i in range(len(X_test)):
-        st.image(X_test[i], caption=f"Test Image {i+1} | Predicted: {predictions[i]} | True: {y_test[i]}", width=150)
-
+        st.image(X_test[i], caption=f"Test Image {i+1} | True: {y_test[i]}", width=150)
 
